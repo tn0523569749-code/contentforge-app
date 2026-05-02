@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContentForge AI — Generate 30 Days of Content</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f0e8;
+    --orange: #ff4d00;
+    --orange-dim: #cc3d00;
+    --grey: #1e1e1e;
+    --mid: #2a2a2a;
+    --light: #888;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 2.5rem;
+    border-bottom: 1px solid #1a1a1a;
+    background: rgba(10,10,10,0.95);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem; letter-spacing: 0.1em;
+  }
+  .nav-logo span { color: var(--orange); }
+  .nav-user {
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-plan {
+    font-size: 0.72rem; color: var(--light);
+    font-family: 'DM Mono', monospace;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    padding: 0.3rem 0.8rem; border-radius: 100px;
+  }
+  .nav-plan.pro { border-color: var(--orange); color: var(--orange); }
+  .upgrade-btn {
+    background: var(--orange); color: #fff;
+    font-size: 0.8rem; font-weight: 500;
+    padding: 0.5rem 1.2rem; border-radius: 2px;
+    text-decoration: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+  .upgrade-btn:hover { background: var(--orange-dim); }
+
+  /* MAIN LAYOUT */
+  .app-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* LEFT PANEL */
+  .left-panel {
+    padding: 2.5rem;
+    border-right: 1px solid #1a1a1a;
+    display: flex; flex-direction: column; gap: 1.5rem;
+  }
+
+  .panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem; letter-spacing: 0.05em;
+  }
+  .panel-title span { color: var(--orange); }
+
+  .input-label {
+    font-size: 0.72rem; color: var(--light);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 0.5rem;
+  }
+
+  .content-input {
+    width: 100%;
+    background: #111; border: 1px solid #2a2a2a;
+    border-radius: 4px; padding: 1rem;
+    color: var(--white); font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; line-height: 1.6;
+    resize: vertical; min-height: 200px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .content-input:focus { border-color: var(--orange); }
+  .content-input::placeholder { color: #444; }
+
+  .char-count {
+    font-size: 0.7rem; color: var(--light);
+    font-family: 'DM Mono', monospace;
+    text-align: right; margin-top: 0.3rem;
+  }
+
+  .platforms-section { }
+  .platforms-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.6rem; margin-top: 0.5rem;
+  }
+  .platform-checkbox {
+    display: flex; align-items: center; gap: 0.6rem;
+    background: #111; border: 1px solid #2a2a2a;
+    border-radius: 4px; padding: 0.7rem 1rem;
+    cursor: pointer; transition: all 0.2s;
+    user-select: none;
+  }
+  .platform-checkbox:hover { border-color: #3a3a3a; }
+  .platform-checkbox.selected {
+    border-color: var(--orange);
+    background: rgba(255,77,0,0.05);
+  }
+  .platform-checkbox input { display: none; }
+  .platform-icon { font-size: 1rem; }
+  .platform-name { font-size: 0.82rem; font-weight: 500; }
+  .platform-check {
+    margin-left: auto; width: 16px; height: 16px;
+    border: 1px solid #3a3a3a; border-radius: 3px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; transition: all 0.2s;
+  }
+  .platform-checkbox.selected .platform-check {
+    background: var(--orange); border-color: var(--orange); color: #fff;
+  }
+
+  .generate-btn {
+    width: 100%; padding: 1.1rem;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 0.1em;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+  }
+  .generate-btn:hover:not(:disabled) { background: var(--orange-dim); transform: translateY(-1px); }
+  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .tip-box {
+    background: #0e0e0e; border: 1px solid #1e1e1e;
+    border-radius: 4px; padding: 1rem;
+    font-size: 0.78rem; color: var(--light);
+    line-height: 1.6;
+  }
+  .tip-box strong { color: var(--orange); }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    padding: 2.5rem;
+    display: flex; flex-direction: column; gap: 1.5rem;
+    background: #080808;
+  }
+
+  .output-header {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .copy-all-btn {
+    background: transparent; border: 1px solid #2a2a2a;
+    color: var(--light); font-size: 0.78rem;
+    padding: 0.4rem 1rem; border-radius: 2px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s; display: none;
+  }
+  .copy-all-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .copy-all-btn.visible { display: block; }
+
+  /* LOADING STATE */
+  .loading-state {
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 300px; gap: 1.5rem;
+  }
+  .loading-state.visible { display: flex; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid #1e1e1e;
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem; color: var(--light);
+  }
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s infinite;
+  }
+  @keyframes dots {
+    0% { content: ''; }
+    33% { content: '.'; }
+    66% { content: '..'; }
+    100% { content: '...'; }
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 400px; gap: 1rem;
+    text-align: center;
+  }
+  .empty-icon { font-size: 3rem; opacity: 0.3; }
+  .empty-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem; color: #333;
+  }
+  .empty-sub { font-size: 0.82rem; color: #333; max-width: 280px; line-height: 1.6; }
+
+  /* OUTPUT CONTENT */
+  .output-content { display: none; }
+  .output-content.visible { display: block; }
+
+  .platform-section {
+    margin-bottom: 2rem;
+    background: #0e0e0e; border: 1px solid #1e1e1e;
+    border-radius: 6px; overflow: hidden;
+  }
+  .platform-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.8rem 1.2rem;
+    background: #111; border-bottom: 1px solid #1e1e1e;
+    cursor: pointer;
+  }
+  .platform-header-left { display: flex; align-items: center; gap: 0.6rem; }
+  .platform-header-name { font-size: 0.85rem; font-weight: 500; }
+  .platform-header-count {
+    font-size: 0.68rem; color: var(--orange);
+    font-family: 'DM Mono', monospace;
+    background: rgba(255,77,0,0.1);
+    padding: 0.2rem 0.5rem; border-radius: 100px;
+  }
+  .platform-toggle { color: var(--light); font-size: 0.8rem; transition: transform 0.3s; }
+  .platform-section.collapsed .platform-toggle { transform: rotate(-90deg); }
+
+  .platform-posts { padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+  .platform-section.collapsed .platform-posts { display: none; }
+
+  .post-card {
+    background: #0a0a0a; border: 1px solid #1a1a1a;
+    border-radius: 4px; padding: 1rem;
+    position: relative;
+  }
+  .post-card:hover { border-color: #2a2a2a; }
+  .post-num {
+    font-size: 0.65rem; color: var(--orange);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 0.5rem;
+  }
+  .post-text {
+    font-size: 0.82rem; color: #ccc;
+    line-height: 1.7; white-space: pre-wrap;
+  }
+  .post-actions {
+    display: flex; gap: 0.5rem; margin-top: 0.8rem;
+  }
+  .post-btn {
+    font-size: 0.7rem; color: var(--light);
+    background: transparent; border: 1px solid #2a2a2a;
+    padding: 0.3rem 0.7rem; border-radius: 2px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .post-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .post-btn.copied { border-color: #22c55e; color: #22c55e; }
+
+  /* RAW OUTPUT (fallback) */
+  .raw-output {
+    background: #0e0e0e; border: 1px solid #1e1e1e;
+    border-radius: 4px; padding: 1.5rem;
+    font-size: 0.82rem; color: #ccc;
+    line-height: 1.8; white-space: pre-wrap;
+    font-family: 'DM Sans', sans-serif;
+    display: none;
+  }
+  .raw-output.visible { display: block; }
+
+  /* ERROR STATE */
+  .error-state {
+    background: rgba(255,77,0,0.05);
+    border: 1px solid rgba(255,77,0,0.2);
+    border-radius: 4px; padding: 1.5rem;
+    font-size: 0.85rem; color: #ff6b3d;
+    line-height: 1.6; display: none;
+  }
+  .error-state.visible { display: block; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .app-layout { grid-template-columns: 1fr; }
+    .left-panel { border-right: none; border-bottom: 1px solid #1a1a1a; }
+    nav { padding: 1rem 1.5rem; }
+    .left-panel, .right-panel { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Content<span>Forge</span> AI</div>
+  <div class="nav-user">
+    <span class="nav-plan" id="planBadge">Starter</span>
+    <button class="upgrade-btn" id="upgradeBtn" onclick="openCheckout('pro')">Upgrade to Pro</button>
+  </div>
+</nav>
+
+<div class="app-layout">
+
+  <!-- LEFT: INPUT PANEL -->
+  <div class="left-panel">
+    <div>
+      <h1 class="panel-title">Generate <span>30 Days</span><br>of Content</h1>
+    </div>
+
+    <div>
+      <div class="input-label">Paste your content or idea</div>
+      <textarea 
+        class="content-input" 
+        id="contentInput"
+        placeholder="Paste any blog post, podcast transcript, newsletter, or rough idea here. The more detail you give, the better the output. Aim for 200+ words for best results."
+        oninput="updateCharCount()"
+      ></textarea>
+      <div class="char-count"><span id="charCount">0</span> characters — aim for 200+</div>
+    </div>
+
+    <div class="platforms-section">
+      <div class="input-label">Select platforms</div>
+      <div class="platforms-grid">
+        <label class="platform-checkbox selected" onclick="togglePlatform(this)">
+          <input type="checkbox" value="LinkedIn" checked>
+          <span class="platform-icon">💼</span>
+          <span class="platform-name">LinkedIn</span>
+          <span class="platform-check">✓</span>
+        </label>
+        <label class="platform-checkbox selected" onclick="togglePlatform(this)">
+          <input type="checkbox" value="Twitter/X" checked>
+          <span class="platform-icon">𝕏</span>
+          <span class="platform-name">Twitter / X</span>
+          <span class="platform-check">✓</span>
+        </label>
+        <label class="platform-checkbox selected" onclick="togglePlatform(this)">
+          <input type="checkbox" value="Instagram" checked>
+          <span class="platform-icon">📸</span>
+          <span class="platform-name">Instagram</span>
+          <span class="platform-check">✓</span>
+        </label>
+        <label class="platform-checkbox" onclick="togglePlatform(this)">
+          <input type="checkbox" value="Facebook">
+          <span class="platform-icon">👥</span>
+          <span class="platform-name">Facebook</span>
+          <span class="platform-check"></span>
+        </label>
+        <label class="platform-checkbox" onclick="togglePlatform(this)">
+          <input type="checkbox" value="Threads">
+          <span class="platform-icon">🧵</span>
+          <span class="platform-name">Threads</span>
+          <span class="platform-check"></span>
+        </label>
+        <label class="platform-checkbox" onclick="togglePlatform(this)">
+          <input type="checkbox" value="TikTok">
+          <span class="platform-icon">🎵</span>
+          <span class="platform-name">TikTok</span>
+          <span class="platform-check"></span>
+        </label>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generateContent()">
+      ⚡ GENERATE 30-DAY CONTENT PLAN
+    </button>
+
+    <div class="tip-box">
+      <strong>💡 Pro tip:</strong> The longer and more detailed your input, the better the output. Paste a full blog post or podcast transcript for best results. A rough idea works too — just give it some context.
+    </div>
+  </div>
+
+  <!-- RIGHT: OUTPUT PANEL -->
+  <div class="right-panel">
+    <div class="output-header">
+      <h2 class="panel-title" style="font-size:1.5rem">Your <span>Content</span></h2>
+      <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">📋 Copy All</button>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">✦</div>
+      <div class="empty-title">Ready to Generate</div>
+      <div class="empty-sub">Paste your content, select your platforms, and hit Generate. Your posts will appear here in under 60 seconds.</div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" id="loadingState">
+      <div class="spinner"></div>
+      <div class="loading-text">Generating your content<span class="loading-dots"></span></div>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" id="errorState">
+      ⚠️ Something went wrong. Please check your internet connection and try again. If the problem persists, the AI service may be temporarily unavailable.
+    </div>
+
+    <!-- Output Content (parsed) -->
+    <div class="output-content" id="outputContent"></div>
+
+    <!-- Raw Output (fallback) -->
+    <div class="raw-output" id="rawOutput"></div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================
+  // CONFIGURATION
+  // ============================================
+  const MAKE_WEBHOOK_URL = 'https://hook.eu1.make.com/jtxatsa71xkw6hsxfc4warln8nf7ohn0';
+  // ============================================
+
+  let generationCount = 0;
+  const STARTER_LIMIT = 50;
+
+  function updateCharCount() {
+    const input = document.getElementById('contentInput');
+    document.getElementById('charCount').textContent = input.value.length;
+  }
+
+  function togglePlatform(label) {
+    label.classList.toggle('selected');
+    const check = label.querySelector('.platform-check');
+    const checkbox = label.querySelector('input');
+    if (label.classList.contains('selected')) {
+      check.textContent = '✓';
+      checkbox.checked = true;
+    } else {
+      check.textContent = '';
+      checkbox.checked = false;
+    }
+  }
+
+  function getSelectedPlatforms() {
+    const checkboxes = document.querySelectorAll('.platform-checkbox.selected input');
+    return Array.from(checkboxes).map(cb => cb.value);
+  }
+
+  function getAllOutputText() {
+    const raw = document.getElementById('rawOutput');
+    if (raw.classList.contains('visible')) return raw.textContent;
+    const posts = document.querySelectorAll('.post-text');
+    return Array.from(posts).map(p => p.textContent).join('\n\n---\n\n');
+  }
+
+  function copyAll() {
+    const text = getAllOutputText();
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copyAllBtn');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy All', 2000);
+    });
+  }
+
+  function copyPost(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  function setLoading(loading) {
+    const btn = document.getElementById('generateBtn');
+    const loadingState = document.getElementById('loadingState');
+    const emptyState = document.getElementById('emptyState');
+
+    btn.disabled = loading;
+    btn.textContent = loading ? 'GENERATING...' : '⚡ GENERATE 30-DAY CONTENT PLAN';
+
+    if (loading) {
+      emptyState.style.display = 'none';
+      loadingState.classList.add('visible');
+      document.getElementById('errorState').classList.remove('visible');
+      document.getElementById('outputContent').classList.remove('visible');
+      document.getElementById('rawOutput').classList.remove('visible');
+    } else {
+      loadingState.classList.remove('visible');
+    }
+  }
+
+  function parseAndDisplayOutput(text) {
+    const outputContent = document.getElementById('outputContent');
+    const rawOutput = document.getElementById('rawOutput');
+
+    // Platform patterns to detect sections
+    const platformPatterns = [
+      { name: 'LinkedIn', icon: '💼', patterns: ['linkedin', 'linked in'] },
+      { name: 'Twitter / X', icon: '𝕏', patterns: ['twitter', 'tweet', 'x post'] },
+      { name: 'Instagram', icon: '📸', patterns: ['instagram', 'caption', 'ig'] },
+      { name: 'Facebook', icon: '👥', patterns: ['facebook', 'fb post'] },
+      { name: 'Threads', icon: '🧵', patterns: ['threads', 'thread'] },
+      { name: 'TikTok', icon: '🎵', patterns: ['tiktok', 'tik tok'] },
+    ];
+
+    // Try to split by platform sections
+    let sections = [];
+    let currentPlatform = null;
+    let currentPosts = [];
+    let currentPostText = '';
+
+    const lines = text.split('\n');
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineLower = line.toLowerCase();
+
+      // Check if this line is a platform header
+      let foundPlatform = null;
+      for (const p of platformPatterns) {
+        if (p.patterns.some(pat => lineLower.includes(pat)) && line.length < 60) {
+          foundPlatform = p;
+          break;
+        }
+      }
+
+      if (foundPlatform) {
+        // Save previous platform
+        if (currentPlatform && currentPostText.trim()) {
+          currentPosts.push(currentPostText.trim());
+        }
+        if (currentPlatform) {
+          sections.push({ platform: currentPlatform, posts: currentPosts });
+        }
+        currentPlatform = foundPlatform;
+        currentPosts = [];
+        currentPostText = '';
+        continue;
+      }
+
+      // Check if this is a post separator (POST 1:, TWEET 1:, etc.)
+      if (/^(post|tweet|caption|thread|tiktok)\s*\d+[:.]?\s*$/i.test(line.trim()) || 
+          /^#{1,2}\s*(post|tweet|caption)\s*\d+/i.test(line.trim())) {
+        if (currentPostText.trim()) {
+          currentPosts.push(currentPostText.trim());
+          currentPostText = '';
+        }
+        continue;
+      }
+
+      currentPostText += (currentPostText ? '\n' : '') + line;
+    }
+
+    // Save last post and platform
+    if (currentPostText.trim()) currentPosts.push(currentPostText.trim());
+    if (currentPlatform) sections.push({ platform: currentPlatform, posts: currentPosts });
+
+    // If we parsed sections successfully, show structured view
+    if (sections.length > 0) {
+      let html = '';
+      sections.forEach(section => {
+        const posts = section.posts.filter(p => p.trim().length > 20);
+        if (posts.length === 0) return;
+
+        html += `
+          <div class="platform-section" id="section-${section.platform.name.replace(/\s/g,'')}">
+            <div class="platform-header" onclick="toggleSection(this.closest('.platform-section'))">
+              <div class="platform-header-left">
+                <span>${section.platform.icon}</span>
+                <span class="platform-header-name">${section.platform.name}</span>
+                <span class="platform-header-count">${posts.length} posts</span>
+              </div>
+              <span class="platform-toggle">▼</span>
+            </div>
+            <div class="platform-posts">
+              ${posts.map((post, i) => `
+                <div class="post-card">
+                  <div class="post-num">POST ${i + 1}</div>
+                  <div class="post-text">${escapeHtml(post)}</div>
+                  <div class="post-actions">
+                    <button class="post-btn" onclick="copyPost(this, ${JSON.stringify(post)})">Copy</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      outputContent.innerHTML = html;
+      outputContent.classList.add('visible');
+    } else {
+      // Fallback: show raw output
+      rawOutput.textContent = text;
+      rawOutput.classList.add('visible');
+    }
+
+    document.getElementById('copyAllBtn').classList.add('visible');
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/\n/g, '<br>');
+  }
+
+  function toggleSection(section) {
+    section.classList.toggle('collapsed');
+  }
+
+  async function generateContent() {
+    const content = document.getElementById('contentInput').value.trim();
+    const platforms = getSelectedPlatforms();
+
+    if (!content) {
+      alert('Please paste some content first.');
+      return;
+    }
+    if (platforms.length === 0) {
+      alert('Please select at least one platform.');
+      return;
+    }
+
+    setLoading(true);
+
+    const prompt = `Here is the content to repurpose:\n\n${content}\n\nSelected platforms: ${platforms.join(', ')}\n\nGenerate social media posts for each selected platform. For LinkedIn: 5 posts (150-300 words each, professional tone, hooks, hashtags). For Twitter/X: 7 tweets (under 280 chars, punchy). For Instagram: 5 captions (100-200 words, warm tone, 8-12 hashtags). For Facebook: 5 posts (100-250 words, conversational). For Threads: 6 posts (under 500 chars, casual). For TikTok: 5 captions (short, trending hooks). Label each platform section clearly.`;
+
+    try {
+      const response = await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: prompt })
+      });
+
+      if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+      const text = await response.text();
+      
+      setLoading(false);
+
+      if (!text || text.trim().length < 10) {
+        throw new Error('Empty response from AI');
+      }
+
+      parseAndDisplayOutput(text);
+      generationCount++;
+
+    } catch (error) {
+      setLoading(false);
+      document.getElementById('errorState').classList.add('visible');
+      console.error('Error:', error);
+    }
+  }
+</script>
+
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>document.addEventListener("DOMContentLoaded",function(){if(typeof Paddle!=="undefined"){Paddle.Initialize({token:"live_7e9e015b986080a797e176da330"});}});
+function openCheckout(plan){var priceId=plan==="pro"?"pri_01kqmar70ny044ggrgt0g220rw":"pri_01kqmam5sz0grb7rd5t8vg61p0";if(typeof Paddle!=="undefined"){Paddle.Checkout.open({items:[{priceId:priceId,quantity:1}]});}else{alert("Payment loading, try again in a moment.");}}
+</script>
+</body>
+</html>
