@@ -341,37 +341,37 @@
     <div class="platforms-section">
       <div class="input-label">Select platforms</div>
       <div class="platforms-grid">
-        <label class="platform-checkbox selected" onclick="togglePlatform(this)">
+        <label class="platform-checkbox selected" onclick="togglePlatform(event, this)">
           <input type="checkbox" value="LinkedIn" checked>
           <span class="platform-icon">💼</span>
           <span class="platform-name">LinkedIn</span>
           <span class="platform-check">✓</span>
         </label>
-        <label class="platform-checkbox selected" onclick="togglePlatform(this)">
+        <label class="platform-checkbox selected" onclick="togglePlatform(event, this)">
           <input type="checkbox" value="Twitter/X" checked>
           <span class="platform-icon">𝕏</span>
           <span class="platform-name">Twitter / X</span>
           <span class="platform-check">✓</span>
         </label>
-        <label class="platform-checkbox selected" onclick="togglePlatform(this)">
+        <label class="platform-checkbox selected" onclick="togglePlatform(event, this)">
           <input type="checkbox" value="Instagram" checked>
           <span class="platform-icon">📸</span>
           <span class="platform-name">Instagram</span>
           <span class="platform-check">✓</span>
         </label>
-        <label class="platform-checkbox" onclick="togglePlatform(this)">
+        <label class="platform-checkbox" onclick="togglePlatform(event, this)">
           <input type="checkbox" value="Facebook">
           <span class="platform-icon">👥</span>
           <span class="platform-name">Facebook</span>
           <span class="platform-check"></span>
         </label>
-        <label class="platform-checkbox" onclick="togglePlatform(this)">
+        <label class="platform-checkbox" onclick="togglePlatform(event, this)">
           <input type="checkbox" value="Threads">
           <span class="platform-icon">🧵</span>
           <span class="platform-name">Threads</span>
           <span class="platform-check"></span>
         </label>
-        <label class="platform-checkbox" onclick="togglePlatform(this)">
+        <label class="platform-checkbox" onclick="togglePlatform(event, this)">
           <input type="checkbox" value="TikTok">
           <span class="platform-icon">🎵</span>
           <span class="platform-name">TikTok</span>
@@ -438,7 +438,8 @@
     document.getElementById('charCount').textContent = input.value.length;
   }
  
-  function togglePlatform(label) {
+  function togglePlatform(event, label) {
+    event.preventDefault();
     label.classList.toggle('selected');
     const check = label.querySelector('.platform-check');
     const checkbox = label.querySelector('input');
